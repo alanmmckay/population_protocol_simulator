@@ -1,0 +1,49 @@
+Population Graph:
+    <graph> ::= (<vector set>,<edge set>)
+   
+    <vector set> ::= {<vectors>}
+    <vectors> ::= <vector> <vectors-tail>
+    <vectors-tail> ::= , <vectors> | e
+    <vector> ::= <STRING>
+
+    <edge set> ::= {<edges>}
+    <edges> ::= <edge> <edges-tail>
+    <edges-tail> ::= , <edges> | e
+    <edge> ::= <ordered-pair> | <unordered-pair>
+    <ordered-pair> ::= (<vector>,<vector)
+    <unordered-pair> ::= {<vector>,<vector>}
+    
+
+Transition Set:
+    <transition set> ::= {<transitions>}
+    <transitions> ::= <transition> <transitions-tail>
+    <transitions-tail> ::= , <transition> | e
+    <transition> ::= (<state list> -> <state list>)
+    <state list> ::= [<states>]
+    <states> ::= <state> <states-tail>
+    <states-tail> := , <states> | e
+    <state> ::= <STRING>
+
+
+The input and output functions can simply act as secondary transition functions.
+
+Read in the graph to establish the population's set of agents and their relationships
+Read in the transition function to describe the set of interactions agents may have
+Read in the input map to ensure each agent within the population has a valid initial state for the transition function
+Read in the output map to get a set of valid outputs once the execution of the protocol is terminated
+
+graph = dict()
+graph['vector set'] = set() //scan through string adding each vector
+graph['edge set'] = set() //scan through string adding each string
+
+for edge in graph['edge set']:
+    if type(edge) == set:
+        //add association to both agents
+    elif type(edge) == list:
+        //add association to one agent
+
+When analyzing associations, keep track of ordered pairs in a data structure. 
+-If an ordered pair with identical agents is encountered, make the proper conversion to indicate bi-direction
+
+
+        
