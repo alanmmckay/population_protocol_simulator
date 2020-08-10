@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 7.1.--><structure>
+	<type>fa</type>
+	<automaton>
+		<!--The list of states.-->
+		<state id="0" name="q0">
+			<x>71.0</x>
+			<y>368.0</y>
+			<label>graph</label>
+			<initial/>
+		</state>
+		<state id="1" name="q1">
+			<x>164.0</x>
+			<y>368.0</y>
+			<label>vector set</label>
+		</state>
+		<state id="2" name="q2">
+			<x>942.0</x>
+			<y>264.0</y>
+			<label>edge set</label>
+		</state>
+		<state id="3" name="q3">
+			<x>1079.0</x>
+			<y>299.0</y>
+			<label>edge set</label>
+		</state>
+		<state id="4" name="q4">
+			<x>167.0</x>
+			<y>270.0</y>
+			<label>vector set</label>
+		</state>
+		<state id="5" name="q5">
+			<x>230.0</x>
+			<y>150.0</y>
+			<label>vector set</label>
+		</state>
+		<state id="6" name="q6">
+			<x>326.0</x>
+			<y>150.0</y>
+			<label>vector set</label>
+		</state>
+		<state id="7" name="q7">
+			<x>419.0</x>
+			<y>150.0</y>
+		</state>
+		<state id="8" name="q8">
+			<x>516.0</x>
+			<y>151.0</y>
+			<label>edge set</label>
+		</state>
+		<state id="9" name="q9">
+			<x>1194.0</x>
+			<y>326.0</y>
+			<label>graph</label>
+		</state>
+		<state id="10" name="q10">
+			<x>539.0</x>
+			<y>279.0</y>
+			<label>ordered pair</label>
+		</state>
+		<state id="11" name="q11">
+			<x>635.0</x>
+			<y>324.0</y>
+			<label>ordered pair</label>
+		</state>
+		<state id="12" name="q12">
+			<x>710.0</x>
+			<y>363.0</y>
+			<label>ordered pair</label>
+		</state>
+		<state id="13" name="q13">
+			<x>793.0</x>
+			<y>399.0</y>
+			<label>ordered pair</label>
+		</state>
+		<state id="14" name="q14">
+			<x>604.0</x>
+			<y>116.0</y>
+			<label>unordered pair</label>
+		</state>
+		<state id="15" name="q15">
+			<x>725.0</x>
+			<y>74.0</y>
+			<label>unordered pair</label>
+		</state>
+		<state id="16" name="q16">
+			<x>808.0</x>
+			<y>56.0</y>
+			<label>unordered pair</label>
+		</state>
+		<state id="17" name="q17">
+			<x>929.0</x>
+			<y>79.0</y>
+			<label>unordered pair</label>
+		</state>
+		<!--The list of transitions.-->
+		<transition>
+			<from>2</from>
+			<to>8</to>
+			<read>,</read>
+		</transition>
+		<transition>
+			<from>13</from>
+			<to>2</to>
+			<read>)</read>
+		</transition>
+		<transition>
+			<from>11</from>
+			<to>12</to>
+			<read>,</read>
+		</transition>
+		<transition>
+			<from>14</from>
+			<to>15</to>
+			<read>&lt;STRING&gt;</read>
+		</transition>
+		<transition>
+			<from>15</from>
+			<to>16</to>
+			<read>,</read>
+		</transition>
+		<transition>
+			<from>10</from>
+			<to>11</to>
+			<read>&lt;STRING&gt;</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>9</to>
+			<read>)</read>
+		</transition>
+		<transition>
+			<from>5</from>
+			<to>6</to>
+			<read>}</read>
+		</transition>
+		<transition>
+			<from>16</from>
+			<to>17</to>
+			<read>&lt;STRING&gt;</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>3</to>
+			<read>}</read>
+		</transition>
+		<transition>
+			<from>4</from>
+			<to>5</to>
+			<read>&lt;STRING&gt;</read>
+		</transition>
+		<transition>
+			<from>17</from>
+			<to>2</to>
+			<read>}</read>
+		</transition>
+		<transition>
+			<from>6</from>
+			<to>7</to>
+			<read>,</read>
+		</transition>
+		<transition>
+			<from>5</from>
+			<to>5</to>
+			<read>, &lt;STRING&gt;</read>
+		</transition>
+		<transition>
+			<from>8</from>
+			<to>10</to>
+			<read>(</read>
+		</transition>
+		<transition>
+			<from>8</from>
+			<to>14</to>
+			<read>{</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>4</to>
+			<read>{</read>
+		</transition>
+		<transition>
+			<from>12</from>
+			<to>13</to>
+			<read>&lt;STRING&gt;</read>
+		</transition>
+		<transition>
+			<from>7</from>
+			<to>8</to>
+			<read>{</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>(</read>
+		</transition>
+	</automaton>
+</structure>
