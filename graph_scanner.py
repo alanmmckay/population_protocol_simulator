@@ -1,60 +1,51 @@
+from graph_token import GraphToken, GraphTokenType
 from helper_functions import file_input
 
 graph_data = file_input('graph')
 
 print(graph_data)
 
-scanner_position = 0
+#case scheme:
+#-objects which can be referenced externally use camel case
+#-objects which are referenced internally use underscores
 
-if graph_data[0] == '(':
-    if graph_data[1] == '{':
-        if graph_data[2] != ',':
-            scanner_position = 2
+delimiters = ["{","}","(",")",","]
+
+class GraphScanner:
+    def __init__(self, graph_str):
+        self.graph_str = graph_str
+        #-possibly convert this string to another data structure that is faster
+        # to parse.
+        self.pos = 0
+        self.maxPos = len(graph_str)
+        self.look_ahead = None
+        self.line = 1
+        
+    def peek(self):
+        if not self.look_ahead:
+            self.lookahead = self.getNextToken()
+        return self.look_ahead
+    
+   def nextToken(self):
+       if self.look_ahead:
+           next_token = self.look_ahead
+           self.look_ahead = None
+           return next_token
+       else:
+           return self.getNextToken()
+       
+    def getNextToken(self):
+        #possibly add a method which skips irrelevant whitespace and comments
+        if self.pos >= maxPos:
+            return GraphToken(GraphTokenType.EOF)
+        
+        elif self.graph_str[self.pos] in delimiters:
+            return GraphToken(GraphTokenType.DELIMITER,self.graph_str[self.pos])
+        
+        elif 
+        #check to see valid vertex label.
+        #check to see if it is a duplicate.
+        
         else:
-            raise ValueError("syntax error: leading comma")
-    else:
-        raise ValueError("syntax error: {")
-else:
-    raise ValueError("syntax error: (")
-
-
-active_vertices = list()
-
-new_vertex = str()
-comma_bool = False
-
-def insert_vertex(vertex):
-    if vertex not in active_vertices:
-        active_vertices.append(new_vertex)
-    else:
-        raise ValueError("duplicate vertex")
-
-while graph_data[scanner_position] != '}':
-    if graph_data[scanner_position] == ',':
-        insert_vertex(new_vertex)
-        new_vertex = str()
-        comma_bool = True
-    else:
-        new_vertex += graph_data[scanner_position]
-        comma_bool = False
-    scanner_position += 1
-
-if comma_bool == False:
-    insert_vertex(new_vertex)
-    scanner_position += 1
-else:
-    raise ValueError("syntax error: trailing comma")
-print(active_vertices)
-print(graph_data[scanner_position])
-
-
-if graph_data[scanner_position] == ',':
-    scanner_position += 1
-    if graph_data[scanner_position] == '{':
-        scanner_position += 1
-        if graph_data[scanner_position] == ',':
-            raise ValueError("syntax error: leading comma")
-    else:
-        raise ValueError("syntax error: {")
-else:
-    raise ValueError("syntax error: missing comma between sets")
+            #throw an error
+    
