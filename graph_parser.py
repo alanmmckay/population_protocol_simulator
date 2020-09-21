@@ -1,7 +1,7 @@
 from graph_scanner import GraphScanner
 from graph_token import GraphTokenType
 
-class GraphParser(self, scanner):
+class GraphParser:
     def __init__(self,scanner):
        self.scanner = scanner
        
