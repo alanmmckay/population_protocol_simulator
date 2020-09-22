@@ -22,8 +22,8 @@ class GraphParser:
         next_token = self.scanner.peek()
         while not next_token.isCloseCurly():
             next_token = self.match_vertex()
-            if next_token not in vertex_set:
-                vertex_set.append(next_token)
+            if next_token.getValue() not in vertex_set:
+                vertex_set.append(next_token.getValue())
                 next_token = self.scanner.peek()
                 if next_token.isComma():
                     self.match(GraphTokenType.COMMA)
@@ -44,9 +44,9 @@ class GraphParser:
             #perhaps clear the tuple element values
             
             opener = self.match_open_pair()
-            a = match_vertex()
+            a = self.match_vertex().getValue()
             self.match(GraphTokenType.COMMA)
-            b = match_vertex()
+            b = self.match_vertex().getValue()
             closer = self.match_close_pair()
             
             if (a,b) not in edge_set:
@@ -60,7 +60,7 @@ class GraphParser:
                         raise ValueError("Duplicate unordered pair in parse \
                               edge set")
                 if opener.isOpenParen():
-                    if not closer.isOpenParen():
+                    if not closer.isCloseParen():
                         raise ValueError("Paren Error in parse edge set")
             else:
                 raise ValueError("Duplicate pair in parse edge set")
@@ -100,7 +100,7 @@ class GraphParser:
         #can probably break out the .isDelimeter() methods here...
         if (next_token.getType() == GraphTokenType.CLOSEPAREN) or \
            (next_token.getType() == GraphTokenType.CLOSECURLY):
-            return True
+            return next_token
         else:
             raise ValueError("error in match_close_pair")
 
