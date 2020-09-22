@@ -1,4 +1,4 @@
-from graph_scanner import GraphScanner
+from graph_scanner.py import GraphScanner
 from graph_token import GraphToken, GraphTokenType
 from helper_functions import file_input
 
