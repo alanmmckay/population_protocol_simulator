@@ -1,3 +1,9 @@
+from sys import argv, path
+import os
+path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)) + 
+'/../'))
+path.insert(0, os.getcwd())
+
 from graph_scanner import GraphScanner
 from graph_token import GraphToken, GraphTokenType
 from graph_parser import GraphParser
