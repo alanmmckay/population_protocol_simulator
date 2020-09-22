@@ -15,7 +15,6 @@ Population Graph:
     <ordered-pair> ::= (<vertex>,<vertex)
     <unordered-pair> ::= {<vertex>,<vertex>}
     
-    <VALIDSTRING> ::= ([a-z]*[A-Z]*[1-9]*)* //touch up on regex
 
 Transition Set:
     <transition set> ::= {<transitions>}
@@ -27,4 +26,3 @@ Transition Set:
     <states-tail> := , <states> | e
     <state> ::= <VALIDSTRING>
     
-    <VALIDSTRING> ::= ([a-z]*[A-Z]*[1-9]*)* //touch up on regex
