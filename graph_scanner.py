@@ -1,9 +1,4 @@
 from graph_token import GraphToken, GraphTokenType
-from helper_functions import file_input
-
-graph_data = file_input('graph')
-
-print(graph_data)
 
 #case scheme:
 #-objects which can be referenced externally use camel case
@@ -87,12 +82,4 @@ class GraphScanner:
         else:
             self.pos += 1
         return token
-            
-graph = GraphScanner(graph_data)
-
-while True:
-    token = graph.getNextToken()
-    print(token)
-    if token.isEOF():
-        break
 
