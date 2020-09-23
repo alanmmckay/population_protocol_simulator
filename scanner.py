@@ -9,7 +9,7 @@ from enum import Enum
 if __name__ == "__main__":
     class ScannerTokenType(Enum):
         CHAR = 1;
-        EOF = 1;
+        EOF = 2;
 
     class ScannerToken:
         def __init__(self, token_type, token_value = None):
@@ -62,7 +62,7 @@ class Scanner:
                 #keeping handling the character position of
                 #the input string
             token = self.produceToken()
-            if len(token.getValue()) == 1:
+            if token.isChar():
                 self.pos += 1
             return token
         
@@ -74,5 +74,17 @@ class Scanner:
             else:
                 return ScannerToken(ScannerTokenType.CHAR, \
                     self.input_str[self.pos])
+            
+if __name__ == "__main__":
+    from helper_functions import file_input
+    input_data = file_input("input: ")
+    scanner = Scanner(input_data)
+
+    while True:
+        token = scanner.getNextToken()
+        print(token)
+        if token.isEOF():
+            break
+
 
 
