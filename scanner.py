@@ -75,7 +75,4 @@ class Scanner:
                 return ScannerToken(ScannerTokenType.CHAR, \
                     self.input_str[self.pos])
 
-test = "hello world"
-scanner = Scanner(test)
-for i in range(0,len(test)):
-    print(scanner.getNextToken())
+
