@@ -6,8 +6,9 @@ from graph_token import GraphToken, GraphTokenType
 
 delimiters = ["{","}","(",")",","]
 valid_vertex = list()
-for i in range(97,123):
+for i in range(65,91):
     valid_vertex.append(chr(i))
+    valid_vertex.append(chr(i+32))
 for i in range(0,10):
     valid_vertex.append(i)
 
