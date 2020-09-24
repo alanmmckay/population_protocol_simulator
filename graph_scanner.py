@@ -1,5 +1,5 @@
 from scanner import Scanner
-from graph_token import GraphToken, GraphTokenType
+from token import Token, TokenType
 
 #case scheme:
 #-objects which can be referenced externally use camel case
@@ -33,34 +33,15 @@ class GraphScanner(Scanner):
             else:
                 return string
    
-    def produceDelimiterToken(self):
-        if self.input_str[self.pos] == '(':
-            return GraphToken(GraphTokenType.OPENPAREN, \
-                self.input_str[self.pos])
-        elif self.input_str[self.pos] == ')':
-            return GraphToken(GraphTokenType.CLOSEPAREN, \
-                self.input_str[self.pos])
-        elif self.input_str[self.pos] == ',':
-            return GraphToken(GraphTokenType.COMMA, \
-                self.input_str[self.pos])
-        elif self.input_str[self.pos] == '{':
-            return GraphToken(GraphTokenType.OPENCURLY, \
-                self.input_str[self.pos])
-        elif self.input_str[self.pos] == '}':
-            return GraphToken(GraphTokenType.CLOSECURLY, \
-                self.input_str[self.pos])
-        #else:
-            #error
-   
     def produceToken(self):
         if self.pos >= self.maxPos:
-            return GraphToken(GraphTokenType.EOF)
+            return Token(TokenType.EOF)
         elif self.input_str[self.pos] in self.delimiters:
-            return self.produceDelimiterToken()
+            return Token(TokenType.DELIMITER, self.input_str[self.pos])
         else:
             vertex = self.get_string()
             if vertex != '':
-                return GraphToken(GraphTokenType.VERTEX, \
+                return Token(TokenType.STRING, \
                        vertex)
             else:
                 raise ValueError("Invalid vertex label")
@@ -68,7 +49,7 @@ class GraphScanner(Scanner):
     def getNextToken(self):
         #possibly add a method which skips irrelevant whitespace and comments
         token = self.produceToken()
-        if token.isVertex():
+        if token.isString():
             self.pos += len(token.getValue())
         else:
             self.pos += 1
