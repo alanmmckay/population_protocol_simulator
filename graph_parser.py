@@ -1,5 +1,5 @@
 from graph_scanner import GraphScanner
-from graph_token import GraphTokenType
+from token import TokenType
 
 class GraphParser:
     def __init__(self,scanner):
@@ -9,28 +9,28 @@ class GraphParser:
         return self.parse_graph()
     
     def parse_graph(self):
-        self.match(GraphTokenType.OPENPAREN)
+        self.match(TokenType.DELIMITER, '(')
         vertex_set = self.parse_vertex_set()
-        self.match(GraphTokenType.COMMA)
+        self.match(TokenType.DELIMITER, ',')
         edge_set = self.parse_edge_set()
-        self.match(GraphTokenType.CLOSEPAREN)
-        return [vertex_set, edge_set]
+        self.match(TokenType.DELIMITER, ')')
+        return (vertex_set, edge_set)
     
     def parse_vertex_set(self):
         vertex_set = []
-        self.match(GraphTokenType.OPENCURLY)
+        self.match(TokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
-        while not next_token.isCloseCurly():
+        while not next_token.getValue() == '}':
             next_token = self.match_vertex()
             if next_token.getValue() not in vertex_set:
                 vertex_set.append(next_token.getValue())
                 next_token = self.scanner.peek()
-                if next_token.isComma():
-                    self.match(GraphTokenType.COMMA)
+                if next_token.getValue() == ',':
+                    self.match(TokenType.DELIMITER, ',')
                     next_token = self.scanner.peek()
             else:
                 raise ValueError("error in parse_vertex_set")
-        self.match(GraphTokenType.CLOSECURLY)
+        self.match(TokenType.DELIMITER, '}')
         return vertex_set
         
         
@@ -38,50 +38,55 @@ class GraphParser:
     #an unordered pair will be considered a pair of two tuples
     def parse_edge_set(self):
         edge_set = []
-        self.match(GraphTokenType.OPENCURLY)
+        self.match(TokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
-        while not next_token.isCloseCurly():
+        while not next_token.getValue() == '}':
             #perhaps clear the tuple element values
             
             opener = self.match_open_pair()
             a = self.match_vertex().getValue()
-            self.match(GraphTokenType.COMMA)
+            self.match(TokenType.DELIMITER, ',')
             b = self.match_vertex().getValue()
             closer = self.match_close_pair()
             
-            if (a,b) not in edge_set:
-                edge_set.append((a, b))
-                if opener.isOpenCurly():
+            if opener.getValue() == '(':
+                if not closer.getValue() == ')':
+                    raise ValueError('Paren Error in parse edge set')
+            if opener.getValue() == '{':
+                if not closer.getValue() == '}':
+                    raise ValueError('Curly Error in parse edge set')
+                else:
                     if (b,a) not in edge_set:
-                        edge_set.append((b, a))
-                        if not closer.isCloseCurly():
-                            raise ValueError("Curly Error in parse edge set")
-                    else:
-                        raise ValueError("Duplicate unordered pair in parse \
-                              edge set")
-                if opener.isOpenParen():
-                    if not closer.isCloseParen():
-                        raise ValueError("Paren Error in parse edge set")
-            else:
-                raise ValueError("Duplicate pair in parse edge set")
+                        edge_set.append((b,a))
+                    #else error
+                    
+            if (a,b) not in edge_set:
+                edge_set.append((a,b))
+            #else error
             
             next_token = self.scanner.peek()
-            if next_token.isComma():
-                self.match(GraphTokenType.COMMA)
+            if next_token.getValue() == ',':
+                self.match(TokenType.DELIMITER, ',')
                 next_token = self.scanner.peek()
-        self.match(GraphTokenType.CLOSECURLY)
+        self.match(TokenType.DELIMITER, '}')
         return edge_set
         
-    def match(self, expected_token_type):
+    def match(self, expected_token_type, expected_token_value = None):
         next_token = self.scanner.nextToken()
-        if next_token.getType() == expected_token_type:    
-            return True
+        if next_token.getType() == expected_token_type:
+            if expected_token_value:
+                if next_token.getValue() == expected_token_value:
+                    return True
+                else:
+                    raise ValueError("error in match")
+            else:
+                return True
         else:
             raise ValueError("error in match")
 
     def match_vertex(self):
         next_token = self.scanner.nextToken()
-        if next_token.isVertex():
+        if next_token.isString():
             return next_token
         else:
             raise ValueError("error in match_vertex")
@@ -89,8 +94,8 @@ class GraphParser:
     def match_open_pair(self):
         next_token = self.scanner.nextToken()
         #can probably break out the .isDelimeter() methods here...
-        if (next_token.getType() == GraphTokenType.OPENPAREN) or \
-           (next_token.getType() == GraphTokenType.OPENCURLY):
+        if (next_token.getValue() == '(') or \
+           (next_token.getValue() == '{'):
             return next_token
         else:
             raise ValueError("error in match_open_pair")
@@ -98,8 +103,8 @@ class GraphParser:
     def match_close_pair(self):
         next_token = self.scanner.nextToken()
         #can probably break out the .isDelimeter() methods here...
-        if (next_token.getType() == GraphTokenType.CLOSEPAREN) or \
-           (next_token.getType() == GraphTokenType.CLOSECURLY):
+        if (next_token.getValue() == ')') or \
+           (next_token.getValue() == '}'):
             return next_token
         else:
             raise ValueError("error in match_close_pair")
