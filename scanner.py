@@ -1,39 +1,10 @@
-from enum import Enum
+from token import Token, TokenType
 
 #--- --- ---#
 #A scanner super class that simply iterates through an
 #input string and assumes each character is an individual
 #token.
 #--- --- ---#
-
-if __name__ == "__main__":
-    class ScannerTokenType(Enum):
-        CHAR = 1;
-        EOF = 2;
-
-    class ScannerToken:
-        def __init__(self, token_type, token_value = None):
-            self.token_type = token_type
-            self.token_value = token_value
-                
-        def isChar(self):
-            return self.token_type == ScannerTokenType.CHAR
-
-        def isEOF(self):
-            return self.token_type == ScannerTokenType.EOF
-
-        def getValue(self):
-            return self.token_value
-
-        def getType(self):
-            return self.token_type
-
-        def __repr__(self):
-            if self.isChar():
-                return 'Char: ' + str(self.token_value)
-            elif self.isEOF():
-                return 'end_of_stream'
-            
 
 class Scanner:
     def __init__(self, input_str):
@@ -70,10 +41,11 @@ class Scanner:
             # --- produceToken is used to create tokenType
                 #objects based on the input string.
             if self.pos >= self.maxPos:
-                return ScannerToken(ScannerTokenType.EOF)
+                return Token(TokenType.EOF)
             else:
-                return ScannerToken(ScannerTokenType.CHAR, \
+                return Token(TokenType.CHAR, \
                     self.input_str[self.pos])
+            
             
 if __name__ == "__main__":
     from helper_functions import file_input
