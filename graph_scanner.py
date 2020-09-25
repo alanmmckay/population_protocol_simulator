@@ -1,5 +1,6 @@
 from scanner import Scanner
 from token import Token, TokenType
+from errors import GeneralError
 
 #case scheme:
 #-objects which can be referenced externally use camel case
@@ -19,7 +20,7 @@ class GraphScanner(Scanner):
             valid_list.append(chr(i))
             valid_list.append(chr(i+32))
         for i in range(0,10):
-            valid_list.append(chr(i))
+            valid_list.append(str(i))
         return valid_list
     
     def get_string(self):
@@ -44,7 +45,11 @@ class GraphScanner(Scanner):
                 return Token(TokenType.STRING, \
                        vertex)
             else:
-                raise ValueError("Invalid vertex label")
+                error_msg = "Unknown Character '"
+                error_msg += str(self.input_str[self.pos]) 
+                error_msg += "' found in input graph"
+                GeneralError(error_msg, self.input_str)
+                #raise ValueError("Invalid vertex label")
             
     def getNextToken(self):
         #possibly add a method which skips irrelevant whitespace and comments

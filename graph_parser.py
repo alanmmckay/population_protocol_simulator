@@ -1,5 +1,6 @@
 from graph_scanner import GraphScanner
 from token import TokenType
+from errors import GeneralError
 
 class GraphParser:
     def __init__(self,scanner):
@@ -29,7 +30,11 @@ class GraphParser:
                     self.match(TokenType.DELIMITER, ',')
                     next_token = self.scanner.peek()
             else:
-                raise ValueError("error in parse_vertex_set")
+                error_msg = "Duplicate Vertex: '"
+                error_msg += next_token.getValue()
+                error_msg += "' found in vertex set."
+                GeneralError(error_msg, self.scanner.getInputString())
+                #raise ValueError("error in parse_vertex_set")
         self.match(TokenType.DELIMITER, '}')
         return vertex_set
         
@@ -51,10 +56,18 @@ class GraphParser:
             
             if opener.getValue() == '(':
                 if not closer.getValue() == ')':
-                    raise ValueError('Paren Error in parse edge set')
+                    error_msg = "Error in edge set. Expecting a closing "
+                    error_msg += "parenthesis ')', received: '"
+                    error_msg += closer.getValue() + "'"
+                    GeneralError(error_msg, self.scanner.getInputString())
+                    #raise ValueError('Paren Error in parse edge set')
             if opener.getValue() == '{':
                 if not closer.getValue() == '}':
-                    raise ValueError('Curly Error in parse edge set')
+                    error_msg = "Error in edge set. Expecting a closing "
+                    error_msg += "curly bracket '}', received: '"
+                    error_msg += closer.getValue() + "'"
+                    GeneralError(error_msg, self.scanner.getInputString())
+                    #raise ValueError('Curly Error in parse edge set')
                 else:
                     if (b,a) not in edge_set:
                         edge_set.append((b,a))
@@ -78,18 +91,29 @@ class GraphParser:
                 if next_token.getValue() == expected_token_value:
                     return True
                 else:
-                    raise ValueError("error in match")
+                    error_msg = "Unexpected token: '"
+                    error_msg += str(next_token)
+                    error_msg += "' found."
+                    GeneralError(error_msg, self.scanner.getInputString())
+                    #raise ValueError("error in match")
             else:
                 return True
         else:
-            raise ValueError("error in match")
+            error_msg = "Unexpected token type found in parser match"
+            GeneralError(error_msg, self.scanner.getInputString())
+            #raise ValueError("error in match")
+
 
     def match_vertex(self):
         next_token = self.scanner.nextToken()
         if next_token.isString():
             return next_token
         else:
-            raise ValueError("error in match_vertex")
+            error_msg = "Unexpected value for vertex: '"
+            error_msg += next_token.getValue()
+            error_msg += "'"
+            GeneralError(error_msg, self.scanner.getInputString())
+            #raise ValueError("error in match_vertex")
     
     def match_open_pair(self):
         next_token = self.scanner.nextToken()
