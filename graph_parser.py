@@ -21,21 +21,26 @@ class GraphParser:
         vertex_set = []
         self.match(TokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
-        while not next_token.getValue() == '}':
+        #prime the loop
+        if next_token != '}':
             next_token = self.match_vertex()
-            if next_token.getValue() not in vertex_set:
-                vertex_set.append(next_token.getValue())
-                next_token = self.scanner.peek()
-                if next_token.getValue() == ',':
+            vertex_set.append(next_token.getValue())
+            next_token = self.scanner.peek()
+            if next_token.getValue() == ',':
+                #execute the loop
+                while next_token.getValue() == ',':
                     self.match(TokenType.DELIMITER, ',')
-                    next_token = self.scanner.peek()
-            else:
-                error_msg = "Duplicate Vertex: '"
-                error_msg += next_token.getValue()
-                error_msg += "' found in vertex set."
-                GeneralError(error_msg, self.scanner.getInputString())
-                #raise ValueError("error in parse_vertex_set")
-        self.match(TokenType.DELIMITER, '}')
+                    next_token = self.match_vertex()
+                    if next_token.getValue() not in vertex_set:
+                        vertex_set.append(next_token.getValue())
+                        next_token = self.scanner.peek()
+                    else:
+                        error_msg = "Duplicate Vertex: '"
+                        error_msg += next_token.getValue()
+                        error_msg += "' found in vertex set."
+                        GeneralError(error_msg, self.scanner.getInputString())
+                        #raise ValueError("error in parse_vertex_set")
+            self.match(TokenType.DELIMITER, '}')
         return vertex_set
         
         
