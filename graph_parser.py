@@ -146,7 +146,12 @@ class GraphParser:
            (next_token.getValue() == '{'):
             return next_token
         else:
-            raise ValueError("error in match_open_pair")
+            error_msg = "Error in within edge set. Expecting an opening "
+            error_msg += "delimiter. Received '"
+            error_msg += next_token.getValue()
+            error_msg += "' instead"
+            GeneralError(error_msg, self.scanner.getInputString())
+            #raise ValueError("error in match_open_pair")
         
     def match_close_pair(self):
         next_token = self.scanner.nextToken()
@@ -155,6 +160,11 @@ class GraphParser:
            (next_token.getValue() == '}'):
             return next_token
         else:
-            raise ValueError("error in match_close_pair")
+            error_msg = "Error in within edge set. Expecting an closing "
+            error_msg += "delimiter. Received '"
+            error_msg += next_token.getValue()
+            error_msg += "' instead"
+            GeneralError(error_msg, self.scanner.getInputString())
+            #raise ValueError("error in match_close_pair")
 
         
