@@ -27,6 +27,9 @@ class Scanner:
         else:
             return self.getNextToken()
         
+    def getInputString(self):
+        return self.input_str
+        
     if __name__ == "__main__":
         def getNextToken(self):
             # --- getNextToken invokes produceToken() while

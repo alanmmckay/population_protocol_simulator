@@ -22,7 +22,7 @@ class GraphParser:
         self.match(TokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
         #prime the loop
-        if next_token != '}':
+        if next_token.getValue() != '}':
             next_token = self.match_vertex()
             vertex_set.append(next_token.getValue())
             next_token = self.scanner.peek()
@@ -42,49 +42,68 @@ class GraphParser:
                         #raise ValueError("error in parse_vertex_set")
             self.match(TokenType.DELIMITER, '}')
         return vertex_set
+    
+    def parse_edge(self):
+        opener = self.match_open_pair()
+        a = self.match_vertex().getValue()
+        self.match(TokenType.DELIMITER, ',')
+        b = self.match_vertex().getValue()
+        closer = self.match_close_pair()
         
-        
+        if opener.getValue() == '(':
+            if closer.getValue() == ')':
+                return [(a,b)]
+            else:
+                error_msg = "Error in edge set. Expecting a closing "
+                error_msg += "parenthesis ')', received: '"
+                error_msg += closer.getValue() + "'"
+                GeneralError(error_msg, self.scanner.getInputString())
+                #raise ValueError('Paren Error in parse edge set')
+        elif opener.getValue() == '{':
+            if closer.getValue() == '}':
+                return [(a,b),(b,a)]
+            else:
+                error_msg = "Error in edge set. Expecting a closing "
+                error_msg += "curly bracket '}', received: '"
+                error_msg += closer.getValue() + "'"
+                GeneralError(error_msg, self.scanner.getInputString())
+                #raise ValueError('Curly Error in parse edge set')
+                
+                
     #let an edge be described as a tuple
     #an unordered pair will be considered a pair of two tuples
     def parse_edge_set(self):
         edge_set = []
         self.match(TokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
-        while not next_token.getValue() == '}':
-            #perhaps clear the tuple element values
+        if next_token.getValue() != '}':
+            next_token = self.parse_edge()#perhaps rename next_token variable
             
-            opener = self.match_open_pair()
-            a = self.match_vertex().getValue()
-            self.match(TokenType.DELIMITER, ',')
-            b = self.match_vertex().getValue()
-            closer = self.match_close_pair()
-            
-            if opener.getValue() == '(':
-                if not closer.getValue() == ')':
-                    error_msg = "Error in edge set. Expecting a closing "
-                    error_msg += "parenthesis ')', received: '"
-                    error_msg += closer.getValue() + "'"
-                    GeneralError(error_msg, self.scanner.getInputString())
-                    #raise ValueError('Paren Error in parse edge set')
-            if opener.getValue() == '{':
-                if not closer.getValue() == '}':
-                    error_msg = "Error in edge set. Expecting a closing "
-                    error_msg += "curly bracket '}', received: '"
-                    error_msg += closer.getValue() + "'"
-                    GeneralError(error_msg, self.scanner.getInputString())
-                    #raise ValueError('Curly Error in parse edge set')
+            for pair in next_token:
+                if pair not in edge_set:
+                    edge_set.append(pair)
                 else:
-                    if (b,a) not in edge_set:
-                        edge_set.append((b,a))
-                    #else error
+                    error_msg = "Duplicate edge: '"
+                    error_msg += pair
+                    error_msg += "' found in edge set."
+                    GeneralError(error_msg, self.scanner.getInputString())
                     
-            if (a,b) not in edge_set:
-                edge_set.append((a,b))
-            #else error
-            
             next_token = self.scanner.peek()
-            if next_token.getValue() == ',':
+        if next_token.getValue() == ',':
+            while next_token.getValue() == ',':
+                #execute the loop
                 self.match(TokenType.DELIMITER, ',')
+                next_token = self.parse_edge()
+                
+                for pair in next_token:
+                    if pair not in edge_set:
+                        edge_set.append(pair)
+                    else:
+                        error_msg = "Duplicate edge: '"
+                        error_msg += pair
+                        error_msg += "' found in edge set."
+                        GeneralError(error_msg, self.scanner.getInputString())
+
                 next_token = self.scanner.peek()
         self.match(TokenType.DELIMITER, '}')
         return edge_set
