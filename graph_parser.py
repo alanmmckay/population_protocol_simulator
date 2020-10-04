@@ -1,5 +1,5 @@
 from graph_scanner import GraphScanner
-from token import TokenType
+from general_token import GeneralTokenType
 from errors import GeneralError
 
 class GraphParser:
@@ -10,16 +10,16 @@ class GraphParser:
         return self.parse_graph()
     
     def parse_graph(self):
-        self.match(TokenType.DELIMITER, '(')
+        self.match(GeneralTokenType.DELIMITER, '(')
         vertex_set = self.parse_vertex_set()
-        self.match(TokenType.DELIMITER, ',')
+        self.match(GeneralTokenType.DELIMITER, ',')
         edge_set = self.parse_edge_set()
-        self.match(TokenType.DELIMITER, ')')
+        self.match(GeneralTokenType.DELIMITER, ')')
         return (vertex_set, edge_set)
     
     def parse_vertex_set(self):
         vertex_set = []
-        self.match(TokenType.DELIMITER, '{')
+        self.match(GeneralTokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
         #prime the loop
         if next_token.getValue() != '}':
@@ -29,7 +29,7 @@ class GraphParser:
             if next_token.getValue() == ',':
                 #execute the loop
                 while next_token.getValue() == ',':
-                    self.match(TokenType.DELIMITER, ',')
+                    self.match(GeneralTokenType.DELIMITER, ',')
                     next_token = self.match_vertex()
                     if next_token.getValue() not in vertex_set:
                         vertex_set.append(next_token.getValue())
@@ -40,13 +40,13 @@ class GraphParser:
                         error_msg += "' found in vertex set."
                         GeneralError(error_msg, self.scanner.getInputString())
                         #raise ValueError("error in parse_vertex_set")
-            self.match(TokenType.DELIMITER, '}')
+            self.match(GeneralTokenType.DELIMITER, '}')
         return vertex_set
     
     def parse_edge(self):
         opener = self.match_open_pair()
         a = self.match_vertex().getValue()
-        self.match(TokenType.DELIMITER, ',')
+        self.match(GeneralTokenType.DELIMITER, ',')
         b = self.match_vertex().getValue()
         closer = self.match_close_pair()
         
@@ -74,7 +74,7 @@ class GraphParser:
     #an unordered pair will be considered a pair of two tuples
     def parse_edge_set(self):
         edge_set = []
-        self.match(TokenType.DELIMITER, '{')
+        self.match(GeneralTokenType.DELIMITER, '{')
         next_token = self.scanner.peek()
         if next_token.getValue() != '}':
             next_token = self.parse_edge()#perhaps rename next_token variable
@@ -92,7 +92,7 @@ class GraphParser:
         if next_token.getValue() == ',':
             while next_token.getValue() == ',':
                 #execute the loop
-                self.match(TokenType.DELIMITER, ',')
+                self.match(GeneralTokenType.DELIMITER, ',')
                 next_token = self.parse_edge()
                 
                 for pair in next_token:
@@ -105,7 +105,7 @@ class GraphParser:
                         GeneralError(error_msg, self.scanner.getInputString())
 
                 next_token = self.scanner.peek()
-        self.match(TokenType.DELIMITER, '}')
+        self.match(GeneralTokenType.DELIMITER, '}')
         return edge_set
         
     def match(self, expected_token_type, expected_token_value = None):

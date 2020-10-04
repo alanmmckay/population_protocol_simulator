@@ -1,4 +1,4 @@
-from token import Token, TokenType
+from general_token import GeneralToken, GeneralTokenType
 
 #--- --- ---#
 #A scanner super class that simply iterates through an
@@ -44,9 +44,9 @@ class Scanner:
             # --- produceToken is used to create tokenType
                 #objects based on the input string.
             if self.pos >= self.maxPos:
-                return Token(TokenType.EOF)
+                return GeneralToken(GeneralTokenType.EOF)
             else:
-                return Token(TokenType.CHAR, \
+                return GeneralToken(GeneralTokenType.CHAR, \
                     self.input_str[self.pos])
             
             

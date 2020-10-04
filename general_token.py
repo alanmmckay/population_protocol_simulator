@@ -1,12 +1,12 @@
 from enum import Enum
 
-class TokenType(Enum):
+class GeneralTokenType(Enum):
     CHAR =  1;
     STRING = 2;
     DELIMITER = 3;
     EOF = 4;
 
-class Token:
+class GeneralToken:
     def __init__(self, token_type, token_value = None):
         self.token_type = token_type
         self.token_value = token_value
@@ -18,16 +18,16 @@ class Token:
         return self.token_type
         
     def isChar(self):
-        return self.token_type == TokenType.CHAR
+        return self.token_type == GeneralTokenType.CHAR
         
     def isString(self):
-        return self.token_type == TokenType.STRING
+        return self.token_type == GeneralTokenType.STRING
     
     def isDelimiter(self):
-        return self.token_type == TokenType.DELIMITER
+        return self.token_type == GeneralTokenType.DELIMITER
     
     def isEOF(self):
-        return self.token_type == TokenType.EOF
+        return self.token_type == GeneralTokenType.EOF
     
     def __repr__(self):
         if self.isChar():

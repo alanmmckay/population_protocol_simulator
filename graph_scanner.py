@@ -1,5 +1,5 @@
 from scanner import Scanner
-from token import Token, TokenType
+from general_token import GeneralToken, GeneralTokenType
 from errors import GeneralError
 
 #case scheme:
@@ -36,13 +36,13 @@ class GraphScanner(Scanner):
    
     def produceToken(self):
         if self.pos >= self.maxPos:
-            return Token(TokenType.EOF)
+            return GeneralToken(GeneralTokenType.EOF)
         elif self.input_str[self.pos] in self.delimiters:
-            return Token(TokenType.DELIMITER, self.input_str[self.pos])
+            return GeneralToken(GeneralTokenType.DELIMITER, self.input_str[self.pos])
         else:
             vertex = self.get_string()
             if vertex != '':
-                return Token(TokenType.STRING, \
+                return GeneralToken(GeneralTokenType.STRING, \
                        vertex)
             else:
                 error_msg = "Unknown Character '"
