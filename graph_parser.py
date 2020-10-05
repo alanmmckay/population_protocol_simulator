@@ -5,17 +5,18 @@ from errors import GeneralError
 class GraphParser:
     def __init__(self,scanner):
        self.scanner = scanner
+       self.vertex_set = list()
        
     def parse(self):
         return self.parse_graph()
     
     def parse_graph(self):
         self.match(GeneralTokenType.DELIMITER, '(')
-        vertex_set = self.parse_vertex_set()
+        self.vertex_set = self.parse_vertex_set()
         self.match(GeneralTokenType.DELIMITER, ',')
         edge_set = self.parse_edge_set()
         self.match(GeneralTokenType.DELIMITER, ')')
-        return (vertex_set, edge_set)
+        return (self.vertex_set, edge_set)
     
     def parse_vertex_set(self):
         vertex_set = []
@@ -49,6 +50,13 @@ class GraphParser:
         self.match(GeneralTokenType.DELIMITER, ',')
         b = self.match_vertex().getValue()
         closer = self.match_close_pair()
+        
+        if (a not in self.vertex_set) or (b not in self.vertex_set):
+            error_msg = "Error in edge. Vertex contained in edge '"
+            error_msg += str((a,b))
+            error_msg += "' has not been declared within vertex set."
+            GeneralError(error_msg, self.scanner.getInputString())
+            #raise ValueError("edge vertex not in vertex set")
         
         if opener.getValue() == '(':
             if closer.getValue() == ')':
