@@ -1,4 +1,3 @@
-from graph_scanner import GraphScanner
 from general_token import GeneralTokenType
 from errors import GeneralError
 
