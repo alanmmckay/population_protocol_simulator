@@ -23,14 +23,16 @@ class GraphParser:
         next_token = self.scanner.peek()
         #prime the loop
         if next_token.getValue() != '}':
-            next_token = self.match_vertex()
+            #next_token = self.match_vertex()
+            next_token = self.match(GeneralTokenType.STRING)
             vertex_set.append(next_token.getValue())
             next_token = self.scanner.peek()
             if next_token.getValue() == ',':
                 #execute the loop
                 while next_token.getValue() == ',':
                     self.match(GeneralTokenType.DELIMITER, ',')
-                    next_token = self.match_vertex()
+                    #next_token = self.match_vertex()
+                    next_token = self.match(GeneralTokenType.STRING)
                     if next_token.getValue() not in vertex_set:
                         vertex_set.append(next_token.getValue())
                         next_token = self.scanner.peek()
@@ -45,9 +47,11 @@ class GraphParser:
     
     def parse_edge(self):
         opener = self.match_open_pair()
-        a = self.match_vertex().getValue()
+        #a = self.match_vertex().getValue()
+        a = self.match(GeneralTokenType.STRING).getValue()
         self.match(GeneralTokenType.DELIMITER, ',')
-        b = self.match_vertex().getValue()
+        #b = self.match_vertex().getValue()
+        b = self.match(GeneralTokenType.STRING).getValue()
         closer = self.match_close_pair()
         
         if (a not in self.vertex_set) or (b not in self.vertex_set):
@@ -120,7 +124,7 @@ class GraphParser:
         if next_token.getType() == expected_token_type:
             if expected_token_value:
                 if next_token.getValue() == expected_token_value:
-                    return True
+                    return next_token
                 else:
                     error_msg = "Unexpected token: '"
                     error_msg += str(next_token)
@@ -128,23 +132,13 @@ class GraphParser:
                     GeneralError(error_msg, self.scanner.getInputString())
                     #raise ValueError("error in match")
             else:
-                return True
+                return next_token
         else:
             error_msg = "Unexpected token type found in parser match"
             GeneralError(error_msg, self.scanner.getInputString())
             #raise ValueError("error in match")
 
 
-    def match_vertex(self):
-        next_token = self.scanner.nextToken()
-        if next_token.isString():
-            return next_token
-        else:
-            error_msg = "Unexpected value for vertex: '"
-            error_msg += next_token.getValue()
-            error_msg += "'"
-            GeneralError(error_msg, self.scanner.getInputString())
-            #raise ValueError("error in match_vertex")
     
     def match_open_pair(self):
         next_token = self.scanner.nextToken()
