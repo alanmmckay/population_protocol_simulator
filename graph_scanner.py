@@ -1,5 +1,6 @@
 from scanner import Scanner
 from general_token import GeneralToken, GeneralTokenType
+from delimiters import Delimiters
 from errors import GeneralError
 
 #case scheme:
@@ -10,7 +11,8 @@ class GraphScanner(Scanner):
     def __init__(self, input_str):
         Scanner.__init__(self, input_str)
         #--- Generate Valid characters ---#
-        self.delimiters = ["{","}","(",")",","]
+        self.delimiters = Delimiters()
+        self.delimiters.append(["{","}","(",")",","])
         self.valid_string_chars = self.build_valid_char_list()
         #--- --- --- --- --- --- --- ---#
         
@@ -59,3 +61,6 @@ class GraphScanner(Scanner):
         else:
             self.pos += 1
         return token
+    
+    def getDelimiters(self):
+        return self.delimiters
