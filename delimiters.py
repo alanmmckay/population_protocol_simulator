@@ -21,7 +21,6 @@ class Delimiters:
         return False
     
     def assign(self,item):
-        #perhaps add logic to ensure every opener has an equivelent closer
         if item in ['<','{','[','(']:
             self.openers.append(item)
         elif item in ['>','}',']',')']:
@@ -47,7 +46,17 @@ class Delimiters:
     def getClosers(self):
         return self.encapsulators[1]
     
+    def validateEncapsulator(self,opener,closer):
+        openers = ['<','{','[','(']
+        closers = ['>','}',']',')']
+        if opener in openers and closer in closers:
+            if closer == closers[openers.index(opener)]:
+                return True
+        return False
+            
+    
 if __name__ == "__main__":
     delimiters = Delimiters()
     delimiters.append(['1','2','3','4','}','('])
+    print(delimiters.validateEncapsulator('(','}'))
     
