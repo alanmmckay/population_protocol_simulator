@@ -30,11 +30,17 @@ Init Set:
     <state associations> ::= <state association> <state associations-tail>
     <state associations-tail> ::= , <state associations> | e
     <state association> ::= {<vertex-set>:<state list>}
+    <vertex-set> ::= {<vertex> <vertex-set-tail>}
+    <vertex-set-tail> ::= , <vertex> <vertex-set-tail> | e
+    
+delimiter set:
+    <delimiters> ::= [[<contextless delimiters>],[<encapsulating delimiters>]]
+    <encapsulating delimiters> ::= [<openers>],[<closers>]
 
 -Init set allows the association of an initial state to each vertex.
 --example:
     Graph: ({a,b,c,d,e,f},{(a,b),(a,c),(d,f),(e,a)})
-    Init: ({{a,b,c,d,e},[1]},{{f},[2]})
+    Init: ({{a,b,c,d,e}:[1]},{{f}:[2]})
         //Vertices a,b,c,d,e will be given state 1 where f will have state 2
 
     
