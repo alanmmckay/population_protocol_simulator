@@ -5,6 +5,7 @@ class Parser:
     def __init__(self, scanner):
         #expects a scanner with the Delimiters object type
         self.scanner = scanner
+        self.delimiter_set = scanner.getDelimiters()
         
     def parse(self):
         pass

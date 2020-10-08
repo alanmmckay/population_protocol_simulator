@@ -6,7 +6,6 @@ class GraphParser(Parser):
     def __init__(self,scanner):
         Parser.__init__(self, scanner)
         self.vertex_set = list()
-        self.delimiter_set = scanner.getDelimiters()
        
        
     def parse(self):
