@@ -58,9 +58,15 @@ class InitParser(Parser):
                 self.vertex_set.append(next_token.getValue())
                 return next_token.getValue()
             else:
-                GeneralError("Error in parse_vertex")
+                error_msg = "Error with vertex in Init set. "
+                error_msg += "Duplicate Vertex '"+next_token.getValue()+"' "
+                error_msg += "found in vertex sets."
+                GeneralError(error_msg, "")
         else:
-            GeneralError("Error in parse_vertex")
+            error_msg = "Error with vertex in Init Set. "
+            error_msg += "Vertex '"+next_token.getValue()+"' "
+            error_msg += "not in graph vertex set."
+            GeneralError(error_msg, "")
         
     def parse_state_list(self):
         state_list = list()
