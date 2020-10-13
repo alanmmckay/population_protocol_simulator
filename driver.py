@@ -21,7 +21,7 @@ from helper_functions import file_input;
 
 graph_data = "({a,b,c,d,e,f},{(a,b),(c,d)})"
 init_data = "({{a,b,c,d,e}:[1]},{{f}:[2]})"
-transition_data = "{(1->2),([3,5]->[4,6])}"
+transition_data = "{((1,0)->(1,1)),((0,1)->(1,1)),((1,1)->(1,1)),((0,0)->(0,0))}"
 graph_parse = GraphParser(GraphScanner(graph_data)).parse()
 init_parse = InitParser(InitScanner(init_data),graph_parse[0]).parse()
 transition_parse = TransitionParser(TransitionScanner(transition_data)).parse()

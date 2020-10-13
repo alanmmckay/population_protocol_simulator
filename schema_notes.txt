@@ -18,10 +18,8 @@ Transition Set:
     <transition set> ::= {<transitions>}
     <transitions> ::= <transition> <transitions-tail>
     <transitions-tail> ::= , <transition> | e
-    <transition> ::= (<state list> -> <state list>)
-    <state list> ::= [<states>]
-    <states> ::= <state> <states-tail>
-    <states-tail> := , <states> | e
+    <transition> ::= (<state tuple> -> <state tuple>)
+    <state tuple> ::= (<state>,<state>)
     <state> ::= <STRING>
 
     

@@ -23,35 +23,18 @@ class TransitionParser(Parser):
         
     def parse_transition(self):
         self.match(GeneralTokenType.DELIMITER, '(')
-        next_token = self.scanner.peek()
-        if next_token.getValue() == '[':
-            self.parse_state_lists()
-        else: 
-            pre = self.match(GeneralTokenType.STRING).getValue()
-            self.match(GeneralTokenType.DELIMITER, '-')
-            self.match(GeneralTokenType.DELIMITER, '>')
-            post = self.match(GeneralTokenType.STRING).getValue()
-            self.transitions[pre] = post
-        self.match(GeneralTokenType.DELIMITER, ')')
-        
-        
-    def parse_state_lists(self):
-        pre = self.parse_state_list()
+        pre = self.parse_state_tuple()
         self.match(GeneralTokenType.DELIMITER, '-')
         self.match(GeneralTokenType.DELIMITER, '>')
-        post = self.parse_state_list()
-        self.transitions[str(pre)] = post
-        
-    def parse_state_list(self):
-        states = list()
-        self.match(GeneralTokenType.DELIMITER, '[')
-        states.append(self.match(GeneralTokenType.STRING).getValue())
-        next_token = self.scanner.peek()
-        while next_token.getValue() == ',':
-            self.match(GeneralTokenType.DELIMITER, ',')
-            states.append(self.match(GeneralTokenType.STRING).getValue())
-            next_token = self.scanner.peek()
-        self.match(GeneralTokenType.DELIMITER, ']')
-        return states
-        
+        post = self.parse_state_tuple()
+        self.match(GeneralTokenType.DELIMITER, ')')
+        self.transitions[str((pre[0],pre[1]))] = (post[0],post[1])
+        return True
     
+    def parse_state_tuple(self):
+        self.match(GeneralTokenType.DELIMITER, '(')
+        a = self.match(GeneralTokenType.STRING).getValue()
+        self.match(GeneralTokenType.DELIMITER, ',')
+        b = self.match(GeneralTokenType.STRING).getValue()
+        self.match(GeneralTokenType.DELIMITER, ')')
+        return (a,b)
