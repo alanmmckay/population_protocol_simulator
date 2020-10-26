@@ -6,10 +6,10 @@ class InteractionLog:
         self.interactions = dict()
         self.indexes = list()
         
-        self.partition = list()
-        self.partition_indexes = list()
-        self.partition_pointer = None
-        self.partition_interactions = dict()
+        self.partition = list() #list of edges from the transactions dict
+        self.partition_indexes = list() #list of indeces from the indexes list
+        self.partition_pointer = None 
+        self.partition_interactions = dict() #list of interactions from the interactions dict
         
         self.pointer = -1
         for edge in edge_list:
@@ -46,35 +46,42 @@ class InteractionLog:
     def __getitem__(self,key):
         return self.transactions[key]['states']
     
-    def __revert(self,key):
+    def __revert(self,key = None):
         #this should only be called internally
-        recent = self.partitions.pop()
-        index = self.partition_indexes.pop()
-        self.indexes.append(index)
-        self.partition_interactions[recent] -= 1
-        while recent <= key:
-            recent = self.partitions.pop()
+        #should be allowed to empty the partition_indexes list
+        index = None
+        if key == None:
+            key = self.partition_indexes[0]
+        while index != key:
+            recent_edge = self.partitions.pop()
             index = self.partition_indexes.pop()
             self.indexes.append(index)
-            self.partition_interactions[recent] -= 1
+            self.partition_interactions[recent_edge] -= 1
         return index
         
     
     def rollback(self,key):
-        if self.partition_pointer = None or self.partition_pointer > key:
-            self.partition_pointer = key
+        #if the key is indeed before - chronologically
+            #assume dict[max]
+            #.rollback[max] should do nothing
+            #.rollback[max-1] will take it back to the config before max was added
+        if (key in self.indexes) or (key in self.partition_indexes):
+            if self.partition_pointer = None or self.partition_pointer > key:
+                self.partition_pointer = key
+            elif self.partition_pointer < key:
+                self.partition_pointer = self.__revert(key)
+                
+            while self.partition_pointer >= key:
+                self.partition_pointer = indexes.pop()
+                recent_edge = self.transactions[self.partition_pointer] #a dict
+                self.partition.append(recent_edge)
+                edge = self.transactions[recent]['edge']
+                if edge in self.partition_interactions:
+                    self.partition_interactions[edge] += 1
+                else:
+                    self.partition_interactions[edge] = 1
         else:
-            self.partition_pointer = self.__revert(key)
-        recent = indexes.pop()
-        while recent >= key:
-            self.partition_indexes.append(recent)
-            self.partition.append(self.transactions[recent])
-            edge = self.transactions[recent]['edge']
-            if edge in self.partition_interactions:
-                self.partition_interactions[edge] += 1
-            else:
-                self.partition_interactions[edge] = 1
-            recent = indexes.pop()
-        pass
+            raise ValueError("Invalid key in rollback")
+                
         
     
