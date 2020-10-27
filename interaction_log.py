@@ -8,22 +8,23 @@ class InteractionLog:
         
         self.partition = list() #list of interactions from the transactions dict
         self.partition_indexes = list() #list of indeces from the indexes list
-        self.partition_pointer = None 
         self.partition_interactions = dict() #list of interactions from the interactions dict
         
         self.pointer = -1
+        self.partition_pointer = None 
         for edge in edge_list:
             self.interactions[str(edge)] = 0
             
     def __setitem__(self,key,pair):
-        '''needed input:
-            -a graph edge presented as a string tuple
-            -the states of both agents prior to the interaction
-            #perhaps input could be a tuple composed of the two agent objects
         '''
-        if type(pair) == tuple:
-            if type(pair[0]) == Agent and type(pair[1]) == Agent:
-                if key > self.pointer and type(key) == int:
+        It may seem odd to have a combination of append and the ability to set a numeric key.
+        The primary function is to use the append where the pointer moves by one each time.
+        It may be necessary to allow this __setitem__ method though if we want to allow a
+        user to place expected configurations.
+        '''
+        if (key > self.pointer) and (type(key) == int):
+            if type(pair) == tuple:
+                if type(pair[0]) == Agent and type(pair[1]) == Agent:
                     self.pointer = key
                     self.indexes.append(key)
                     self.transactions[key] = dict()  
@@ -33,11 +34,11 @@ class InteractionLog:
                     self.transactions[key]['states'] = state
                     self.interactions[str(edge)] += 1
                 else:
-                    raise ValueError("InteractionLog key value error")
+                    raise ValueError("InteractionLog tuple requires string for edge")
             else:
-                raise ValueError("InteractionLog tuple requires string for edge")
+                raise ValueError("InteractionLog requires tuple")
         else:
-            raise ValueError("InteractionLog requires tuple")
+            raise ValueError("InteractionLog key value error")
     
     def append(self,pair):
         self.__setitem__(self,(self.pointer + 1),pair)
@@ -60,6 +61,8 @@ class InteractionLog:
             index = self.partition_indexes.pop()
             self.indexes.append(index)
             self.partition_interactions[recent_edge_data['edge']] -= 1
+            if self.partition_interactions[recent_edge_data['edge']] == 0:
+                self.partition_interactions.pop(recent_edge_data['edge'])
         return index
         
     def rollback(self,key):
@@ -68,13 +71,13 @@ class InteractionLog:
             #.rollback[max] should do nothing
             #.rollback[max-1] will take it back to the config before max was added
         if (key in self.indexes) or (key in self.partition_indexes):
-            if self.partition_pointer = None or self.partition_pointer > key:
+            if self.partition_pointer == None or self.partition_pointer > key:
                 self.partition_pointer = key
             elif self.partition_pointer < key:
                 self.partition_pointer = self.restore(key)
                 
             while self.partition_pointer >= key:
-                self.partition_pointer = indexes.pop()
+                self.partition_pointer = self.indexes.pop()
                 recent_edge_data = self.transactions[self.partition_pointer] #a dict
                 self.partition.append(recent_edge_data)
                 edge = self.transactions[recent]['edge']
@@ -85,8 +88,6 @@ class InteractionLog:
         else:
             raise ValueError("Invalid key in rollback")
                 
-    #PERHAPS make some sort of garbage collector for the partition_interactions dict
-        #which removes any entries of 0 interactions
         
     
         
