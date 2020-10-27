@@ -1,0 +1,31 @@
+The simulator can be a means for the interaction log and the population protocol
+to work in tandem.
+    -It should be able to invoke, revoke, and rollback interactions.
+        -When conducting a rollback, it will be necessary to trace back through
+        the states of each agent for each previous interaction.
+    -There also needs to exist a means to gather analytical data of the population
+    as a whole.
+        -Thus when a rollback occurs, this collection of data also needs to be
+        altered
+        
+Here is what is currently in place:
+-transactions is a dictionary composed of interaction data, where each index is
+numeric.
+    -interaction data is an edge and the states of each agent before the interaction
+    occurs
+-indexes is a list of indexes which is used to determine the sequential order of each
+interaction. This is necessary for moving items into the partition list.
+-interactions is a dictionary whose indices are each edge within a graph. Each key 
+represents an interaction count.
+
+-partition is a list of interactions which are exempt from a rolled back configuration.
+-partition_indexes is a list of indices of the items in partition. This is necessary
+for repopulating the transactions dictionary
+-partition interactions is a dictionary that keeps track of the interaction count for
+the items in the partition list
+
+Notice that when a rollback occurs that the transactions and interactions dictionaries
+aren't changed. The partition properties are changed:
+    -This means that if a user wants to look at a previous configuration, that the 
+    interaction properties will be used to compute the **differences**
+    

@@ -6,7 +6,7 @@ class InteractionLog:
         self.interactions = dict()
         self.indexes = list()
         
-        self.partition = list() #list of edges from the transactions dict
+        self.partition = list() #list of interactions from the transactions dict
         self.partition_indexes = list() #list of indeces from the indexes list
         self.partition_pointer = None 
         self.partition_interactions = dict() #list of interactions from the interactions dict
@@ -56,7 +56,7 @@ class InteractionLog:
             if len(self.partition_indexes) > 0:
                 key = self.partition_indexes[0]
         while index != key:
-            recent_edge_data = self.partitions.pop()
+            recent_edge_data = self.partition.pop()
             index = self.partition_indexes.pop()
             self.indexes.append(index)
             self.partition_interactions[recent_edge_data['edge']] -= 1
