@@ -44,22 +44,24 @@ class InteractionLog:
         return None
     
     def __getitem__(self,key):
-        return self.transactions[key]['states']
+        if key in self.transactions:
+            return self.transactions[key]['states']
+        elif key in self.partition_indexes:
+            self.rollback(key)
+            return self.transactions[key]['states']
     
-    def __revert(self,key = None):
-        #this should only be called internally
-        #should be allowed to empty the partition_indexes list
+    def restore(self,key = None):
         index = None
         if key == None:
-            key = self.partition_indexes[0]
+            if len(self.partition_indexes) > 0:
+                key = self.partition_indexes[0]
         while index != key:
-            recent_edge = self.partitions.pop()
+            recent_edge_data = self.partitions.pop()
             index = self.partition_indexes.pop()
             self.indexes.append(index)
-            self.partition_interactions[recent_edge] -= 1
+            self.partition_interactions[recent_edge_data['edge']] -= 1
         return index
         
-    
     def rollback(self,key):
         #if the key is indeed before - chronologically
             #assume dict[max]
@@ -69,12 +71,12 @@ class InteractionLog:
             if self.partition_pointer = None or self.partition_pointer > key:
                 self.partition_pointer = key
             elif self.partition_pointer < key:
-                self.partition_pointer = self.__revert(key)
+                self.partition_pointer = self.restore(key)
                 
             while self.partition_pointer >= key:
                 self.partition_pointer = indexes.pop()
-                recent_edge = self.transactions[self.partition_pointer] #a dict
-                self.partition.append(recent_edge)
+                recent_edge_data = self.transactions[self.partition_pointer] #a dict
+                self.partition.append(recent_edge_data)
                 edge = self.transactions[recent]['edge']
                 if edge in self.partition_interactions:
                     self.partition_interactions[edge] += 1
@@ -83,5 +85,9 @@ class InteractionLog:
         else:
             raise ValueError("Invalid key in rollback")
                 
+    #PERHAPS make some sort of garbage collector for the partition_interactions dict
+        #which removes any entries of 0 interactions
+        
+    
         
     
