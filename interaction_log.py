@@ -9,11 +9,17 @@ class InteractionLog:
         self.partition = list() #list of interactions from the transactions dict
         self.partition_indexes = list() #list of indeces from the indexes list
         self.partition_interactions = dict() #list of interactions from the interactions dict
+        self.partitioned_null_indexes = list()
+        
+        self.null_interactions = dict()
+        self.null_transactions = list()
+        self.null_indexes = list()
         
         self.pointer = -1
         self.partition_pointer = None 
         for edge in edge_list:
             self.interactions[str(edge)] = 0
+            self.null_interactions[str(edge)] = 0
             
     def __setitem__(self,key,pair):
         '''
@@ -40,8 +46,21 @@ class InteractionLog:
         else:
             raise ValueError("InteractionLog key value error")
     
-    def append(self,pair):
-        self.__setitem__(self,(self.pointer + 1),pair)
+    def append(self,pair, null = False):
+        if null == False:
+            self.__setitem__(self,(self.pointer + 1),pair)
+        else:
+            if type(pair) == tuple:
+                if type(pair[0]) == Agent and type(pair[1]) == Agent:
+                    edge = (pair[0].getVertex(),pair[1].getVertex())
+                    self.pointer += 1
+                    self.null_interactions[str(edge)] += 1
+                    self.null_indexes.append(self.pointer)
+                    self.null_transactions.append(str(edge))
+                else:
+                    raise ValueError("InteractionLog tuple requires string for edge")
+            else:
+                raise ValueError("InteractionLog requires tuple")
         return None
     
     def __getitem__(self,key):
@@ -52,6 +71,7 @@ class InteractionLog:
             return self.transactions[key]['states']
     
     def restore(self,key = None):
+        #perhaps validate the key??
         index = None
         if key == None:
             if len(self.partition_indexes) > 0:
