@@ -4,22 +4,18 @@ class InteractionLog:
     def __init__(self,edge_list):
         self.transactions = dict()
         self.interactions = dict()
+        self.null_transactions = dict()
         self.indexes = list()
-        
-        self.partition = list() #list of interactions from the transactions dict
-        self.partition_indexes = list() #list of indeces from the indexes list
-        self.partition_interactions = dict() #list of interactions from the interactions dict
-        self.partitioned_null_indexes = list()
-        
-        self.null_interactions = dict()
-        self.null_transactions = list()
         self.null_indexes = list()
         
+        self.partition = list() #list of interactions from the transactions dict
         self.pointer = -1
-        self.partition_pointer = None 
+        
         for edge in edge_list:
-            self.interactions[str(edge)] = 0
-            self.null_interactions[str(edge)] = 0
+            self.interactions[str(edge)] = dict()
+            self.interactions[str(edge)]['count'] = 0
+            self.interactions[str(edge)]['null_count'] = 0
+            
             
     def __setitem__(self,key,pair):
         '''
@@ -38,7 +34,7 @@ class InteractionLog:
                     state = (pair[0].getState(),pair[1].getState())
                     self.transactions[key]['edge'] = str(edge)
                     self.transactions[key]['states'] = state
-                    self.interactions[str(edge)] += 1
+                    self.interactions[str(edge)]['count'] += 1
                 else:
                     raise ValueError("InteractionLog tuple requires string for edge")
             else:
@@ -46,22 +42,21 @@ class InteractionLog:
         else:
             raise ValueError("InteractionLog key value error")
     
-    def append(self,pair, null = False):
-        if null == False:
-            self.__setitem__(self,(self.pointer + 1),pair)
-        else:
-            if type(pair) == tuple:
-                if type(pair[0]) == Agent and type(pair[1]) == Agent:
+    def append(self, pair, null = False):
+        if type(pair) == tuple:
+            if type(pair[0]) == Agent and type(pair[1]) == Agent:
+                if null == False:
+                    self.__setitem__(self,(self.pointer + 1), pair)
+                else:
                     edge = (pair[0].getVertex(),pair[1].getVertex())
                     self.pointer += 1
-                    self.null_interactions[str(edge)] += 1
                     self.null_indexes.append(self.pointer)
-                    self.null_transactions.append(str(edge))
-                else:
-                    raise ValueError("InteractionLog tuple requires string for edge")
+                    self.null_transactiosn[self.pointer] = edge
+                    self.interactions[str(edge)]['null'] += 1
             else:
-                raise ValueError("InteractionLog requires tuple")
-        return None
+                raise ValueError("InteractionLog tuple requires two Agent types")
+        else:
+            raise ValueError("InteractionLog requires tuple")
     
     def __getitem__(self,key):
         if key in self.transactions:
@@ -90,9 +85,13 @@ class InteractionLog:
             #assume dict[max]
             #.rollback[max] should do nothing
             #.rollback[max-1] will take it back to the config before max was added
+            
+        #now also need to factor the null transition list...
+            #the key provided through a function call should only exist within indexes
+            #but the while loop needs to consider the set of null indices
         if (key in self.indexes) or (key in self.partition_indexes):
             if self.partition_pointer == None or self.partition_pointer > key:
-                self.partition_pointer = key
+                self.partition_pointer = self.partition_pointer#pass
             elif self.partition_pointer < key:
                 self.partition_pointer = self.restore(key)
                 
@@ -107,8 +106,3 @@ class InteractionLog:
                     self.partition_interactions[edge] = 1
         else:
             raise ValueError("Invalid key in rollback")
-                
-        
-    
-        
-    
