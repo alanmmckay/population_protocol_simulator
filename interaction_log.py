@@ -126,7 +126,7 @@ class InteractionLog:
                     #pop the transaction off the partition list
                     transaction = self.null_partition.pop()
                     #re-increment the interactions count
-                    self.interactions[edge]['null_count'] += 1
+                    self.interactions[str(edge)]['null_count'] += 1
                     if index != -1:
                         self.partition_indexes.append(index)
                     #move the pointer
@@ -182,7 +182,7 @@ class InteractionLog:
                     #thus place this entry into it's respective partitions dictionary
                     self.null_partition.append(edge)
                     #factor the interaction count
-                    self.interactions[edge]['null_count'] -= 1
+                    self.interactions[str(edge)]['null_count'] -= 1
                     if index != -1:
                         self.indexes.append(index)
                     self.pointer = null_index
