@@ -45,10 +45,10 @@ class PopulationProtocol(object):
         return agentDict
    
    
-   def checkConvergence(self,value):
-       for agent in self.agents:
-           if agent.getState() != value:
-               return False
+    def checkConvergence(self,value):
+        for agent in self.agents:
+            if agent.getState() != value:
+                return False
         return True
    
    
@@ -98,11 +98,12 @@ class PopulationProtocol(object):
                 self.log.append((sender,receiver))
                 sender.changeState(self.transition_function[str(current_state)][0])
                 receiver.changeState(self.transition_function[str(current_state)][1])
+                return "stateChanged"
             else:
                 self.log.append((sender,receiver),True)
+                return "null"
         else:
             return False
-            
-        return((sender.getVertex(),receiver.getVertex()))
+        #return((sender.getVertex(),receiver.getVertex()))
         
         
