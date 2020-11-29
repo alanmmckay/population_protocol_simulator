@@ -21,6 +21,12 @@ class InteractionLog:
             self.interactions[str(edge)]['count'] = 0
             self.interactions[str(edge)]['null_count'] = 0
             
+        infinity = float('inf')
+        self.count_max = [-(infinity)]
+        self.null_count_max = [-(infinity)]
+        self.count_min = [infinity]
+        self.null_count_min = [infinity]
+            
             
     def __setitem__(self,key,pair):
         '''
@@ -40,6 +46,15 @@ class InteractionLog:
                     self.transactions[key]['edge'] = edge
                     self.transactions[key]['states'] = state
                     self.interactions[str(edge)]['count'] += 1
+                    
+                    ### --- max counter
+                    if self.count_max[-1] <= self.interactions[str(edge)]['count']:
+                        self.count_max.append(self.interactions[str(edge)]['count'])
+                        
+                    ### --- min counter
+                    if self.count_min[-1] >= self.interactions[str(edge)]['count']:
+                        self.count_min.append(self.interactions[str(edge)]['count'])
+                        
                 else:
                     raise ValueError("InteractionLog tuple requires string for edge")
             else:
@@ -59,6 +74,15 @@ class InteractionLog:
                     self.null_indexes.append(self.pointer)
                     self.null_transactions[self.pointer] = edge
                     self.interactions[str(edge)]['null_count'] += 1
+                    
+                    ### --- max counter
+                    if self.null_count_max[-1] <= self.interactions[str(edge)]['null_count']:
+                        self.null_count_max.append(self.interactions[str(edge)]['null_count'])
+                        
+                    ### --- min counter
+                    if self.null_count_min[-1] >= self.interactions[str(edge)]['null_count']:
+                        self.null_count_min.append(self.interactions[str(edge)]['null_count'])
+                    
             else:
                 raise ValueError("InteractionLog tuple requires two Agent types")
         else:
@@ -117,6 +141,15 @@ class InteractionLog:
                     edge[1].changeState(later_states[1])
                     #re-increment the interactions count
                     self.interactions[str(edge)]['count'] += 1
+                    
+                    ### --- max counter
+                    if self.count_max[-1] <= self.interactions[str(edge)]['count']:
+                        self.count_max.append(self.interactions[str(edge)]['count'])
+                        
+                    ### --- min counter
+                    if self.count_min[-1] >= self.interactions[str(edge)]['count']:
+                        self.count_min.append(self.interactions[str(edge)]['count'])
+                        
                     if null_index != -1:
                         self.null_partition_indexes.append(null_index)
                     #move the pointer
@@ -129,6 +162,15 @@ class InteractionLog:
                     transaction = self.null_partition.pop()
                     #re-increment the interactions count
                     self.interactions[str(edge)]['null_count'] += 1
+                    
+                    ### --- max counter
+                    if self.null_count_max[-1] <= self.interactions[str(edge)]['null_count']:
+                        self.null_count_max.append(self.interactions[str(edge)]['null_count'])
+                        
+                    ### --- min counter
+                    if self.null_count_min[-1] >= self.interactions[str(edge)]['null_count']:
+                        self.null_count_min.append(self.interactions[str(edge)]['null_count'])
+                        
                     if index != -1:
                         self.partition_indexes.append(index)
                     #move the pointer
@@ -172,6 +214,15 @@ class InteractionLog:
                     #place this entry into its respective partitions dictionary
                     self.partition.append((edge,later_states))
                     #factor the interaction count
+                    
+                    ### --- max counter
+                    if self.count_max[-1] == self.interactions[str(edge)]['count']:
+                        self.count_max.pop()
+                        
+                    ### --- min counter
+                    if self.count_min[-1] == self.interactions[str(edge)]['count']:
+                        self.count_min.pop()
+                    
                     self.interactions[str(edge)]['count'] -= 1
                     if null_index != -1:
                         self.null_indexes.append(null_index)
@@ -184,6 +235,15 @@ class InteractionLog:
                     #thus place this entry into it's respective partitions dictionary
                     self.null_partition.append(edge)
                     #factor the interaction count
+                    
+                    ### --- max counter
+                    if self.null_count_max[-1] == self.interactions[str(edge)]['null_count']:
+                        self.null_count_max.pop()
+                        
+                    ### --- min counter
+                    if self.null_count_min[-1] == self.interactions[str(edge)]['null_count']:
+                        self.null_count_min.pop()
+                        
                     self.interactions[str(edge)]['null_count'] -= 1
                     if index != -1:
                         self.indexes.append(index)
@@ -192,3 +252,16 @@ class InteractionLog:
                     raise ValueError("Error in rollback")
         else:
             raise ValueError("Invalid key in rollback")
+        
+    def getCurrentMax(self, interaction_type):
+        if interaction_type == 'regular':
+            return self.count_max[-1]
+        elif interaction_type == 'null':
+            return self.null_count_max[-1]
+        
+    def getCurrentMin(self, interaction_type):
+        if interaction_type == 'regular':
+            return self.count_min[-1]
+        elif interaction_type == 'null':
+            return self.null_count_min[-1]
+        
