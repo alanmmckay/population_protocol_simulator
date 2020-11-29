@@ -1,5 +1,6 @@
 import random
 from agent import Agent
+from interaction_log import InteractionLog
 
 class PopulationProtocol(object):
     def __init__(self,graph,transitions,init):
@@ -15,39 +16,84 @@ class PopulationProtocol(object):
         self.agents = list()
         self.agents_length = len(graph[0])
         
-        edge_iterator = list(self.edges)
+        if len(self.edges) == 0:
+            for v1 in self.vertices:
+                for v2 in self.vertices:
+                    if v1 != v2:
+                        self.edges.append((v1,v2))
+        
+        self.log = InteractionLog(self.edges)
+        #edge_iterator = list(self.edges)
+        
         for vertex in self.vertices:
-            new_agent = Agent(vertex, self.initial_values[vertex])
-            for edge in edge_iterator:
+            new_agent = Agent(vertex, self.initial_values[vertex][0])
+            for edge in self.edges:
                 if edge[0] == vertex:
                     new_agent.addNeighbor(edge[1])
-                    edge_iterator.remove(edge)
+                    #edge_iterator.remove(edge)
             self.agents.append(new_agent)
                     
     def getAgents(self):
         return self.agents
+    
+    def getAgentStates(self):
+        agentDict = dict()
+        for agent in self.agents:
+            agentDict[agent.getVertex()] = agent.getState()
+        return agentDict
    
-    def getTransitionFunction(self):
-       return self.transition_function
-   
-    def invokeInteractions(self,sender = None,receiver = None):
+    def invokeInteraction(self,sender = None,receiver = None):
+        init = sender
+        if sender == None or receiver == None:
+            candidates = list(self.agents)
+            candidates_length = int(self.agents_length)
+        
         if sender == None:
-            sender = random.randint(0,self.agents_length - 1)
-            sender = agents[sender]
+            while sender == None:
+                if candidates_length <= 0:
+                    raise ValueError("No edges exist; invokeInteraction")
+                new = random.randint(0,candidates_length - 1)
+                new = candidates.pop(new)
+                candidates_length -= 1
+                if new.getNeighborCount() > 0:
+                    sender = new
+        else:
+            sender = self.agents[sender]
+            if sender.getNeighborCount() <= 0:
+                raise ValueError("No edges exist; invokeInteraction sender")
+        
         if receiver == None:
-            receiver = random.randint(0,sender.getNeighborCount() - 1)
-        receiver = sender.getNeighbor(receiver)#will return false if not a neighbor
-        if receiver:
-            #factor the transition function; look up state pair and assign new values 
-            current_state = (sender.getState(),receiver.getState())
-            if str(current_state) in self.transition_function:
+            if init != None:
+                candidates.pop(sender)
+            while receiver == None:
+                if candidates_length <= 0:
+                    raise ValueError("No edges exist; invokeINteraction receiver")
+                new = random.randint(0,candidates_length - 1)
+                new = candidates.pop(new)
+                candidates_length -= 1
+                if new.getVertex() in sender.getNeighbors():
+                    receiver = new
+        else:
+            receiver = self.agents[receiver]
+            if receiver.getNeighborCount() <= 0:
+                raise ValueError("No edges exist; invokeInteraction receiver")
+        
+        if receiver == sender:
+            raise ValueError("Duplicate arguments")
+        
+        
+        current_state = (sender.getState(),receiver.getState())
+        if str(current_state) in self.transition_function:
+            if str(self.transition_function[str(current_state)]) != str(current_state):
                 #log interaction
-                newStates = self.transition_function[str(current_state)]
-                sender.changeState(newStates[0])
-                receiver.changeState(newStates[1])
+                self.log.append((sender,receiver))
+                sender.changeState(self.transition_function[str(current_state)][0])
+                receiver.changeState(self.transition_function[str(current_state)][1])
             else:
-                #log null interaction
-                pass
-                
+                self.log.append((sender,receiver),True)
+        else:
+            return False
             
+        return((sender.getVertex(),receiver.getVertex()))
+        
         

@@ -47,17 +47,18 @@ class InteractionLog:
         else:
             raise ValueError("InteractionLog key value error")
     
+    
     def append(self, pair, null = False):
         if type(pair) == tuple:
             if type(pair[0]) == Agent and type(pair[1]) == Agent:
                 if null == False:
-                    self.__setitem__(self,(self.pointer + 1), pair)
+                    self.__setitem__((self.pointer + 1), pair)
                 else:
                     edge = (pair[0].getVertex(),pair[1].getVertex())
                     self.pointer += 1
                     self.null_indexes.append(self.pointer)
                     self.null_transactions[self.pointer] = edge
-                    self.interactions[str(edge)]['null'] += 1
+                    self.interactions[str(edge)]['null_count'] += 1
             else:
                 raise ValueError("InteractionLog tuple requires two Agent types")
         else:
@@ -69,6 +70,7 @@ class InteractionLog:
         elif key in self.partition_indexes:
             self.rollback(key)
             return self.transactions[key]['states']
+    
     
     '''A function which takes a key as an argument and restores a population
         protocol's configuration from a rolled-back state. If no key is provided,
