@@ -32,15 +32,25 @@ class PopulationProtocol(object):
                     new_agent.addNeighbor(edge[1])
                     #edge_iterator.remove(edge)
             self.agents.append(new_agent)
-                    
+           
+           
     def getAgents(self):
         return self.agents
+    
     
     def getAgentStates(self):
         agentDict = dict()
         for agent in self.agents:
             agentDict[agent.getVertex()] = agent.getState()
         return agentDict
+   
+   
+   def checkConvergence(self,value):
+       for agent in self.agents:
+           if agent.getState() != value:
+               return False
+        return True
+   
    
     def invokeInteraction(self,sender = None,receiver = None):
         init = sender
@@ -80,7 +90,6 @@ class PopulationProtocol(object):
         
         if receiver == sender:
             raise ValueError("Duplicate arguments")
-        
         
         current_state = (sender.getState(),receiver.getState())
         if str(current_state) in self.transition_function:
