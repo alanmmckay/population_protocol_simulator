@@ -70,17 +70,17 @@ while userInput != 'q':
             if(count > userInput):
                 break
             count+=1
-            population.invokeInteraction()
-            dot = population.renderConfiguration("null")
-            graphfile = open('output/graph'+str(printcount)+'.dot','w')
-            graphfile.write(dot)
-            graphfile.close()
-            check_call(['dot','-Tpng','output/graph'+str(printcount)+'.dot','-o','output/graph-'+str(printcount)+'.png'])
-            printcount += 1
+            status = population.invokeInteraction()
+            if status == 'stateChanged':
+                dot = population.renderConfiguration("null")
+                graphfile = open('output/graph'+str(printcount)+'.dot','w')
+                graphfile.write(dot)
+                graphfile.close()
+                check_call(['dot','-Tpng','output/graph'+str(printcount)+'.dot','-o','output/graph-'+str(printcount)+'.png'])
+                printcount += 1
             
     if userInput == 'nullprint':
         dot = population.renderConfiguration("null")
-        print(dot)
         graphfile = open('output/graph'+str(printcount)+'.dot','w')
         graphfile.write(dot)
         graphfile.close()
@@ -96,4 +96,7 @@ while userInput != 'q':
         
     userInput = input("Command: ")
 
+for i in range(0,printcount):
+    check_call(['rm','output/graph'+str(i)+'.dot'])
+    check_call(['rm','output/graph-'+str(i)+'.png'])
 #dot -Tpng filename.dot -o outputfile.png
