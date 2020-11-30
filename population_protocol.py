@@ -104,6 +104,7 @@ class PopulationProtocol(object):
                 self.log.append((sender,receiver),True)
                 return "null"
         else:
+            self.log.append((sender,receiver),True)
             return False
         #return((sender.getVertex(),receiver.getVertex()))
         
@@ -158,12 +159,15 @@ class PopulationProtocol(object):
             vertex = agent.getVertex()
             label = agent.getState()
             node_str += str(vertex)
-            node_str += ' [label ="'+str(label)+'",'
-            node_str += 'shape=circle,fixedsize=true,fontsize=24,width=0.5]\n'
+            node_str += ' [label ="'+str(vertex)+' ['+str(label)+']",'
+            node_str += 'shape=circle,fixedsize=true,fontsize=18,width=1]\n'
             
             for neighbor in agent.getNeighbors():
                 edge = str((vertex,neighbor))
                 value = self.log.interactions[edge][accessor]
+                #print()
+                #print(edge)
+                #print(value)
                 edge_str += vertex + ' -> ' + neighbor
                 
                 ### --- color logic for edges: grey->red
