@@ -43,9 +43,10 @@ class InteractionLog:
                     self.transactions[key] = dict()  
                     edge = (pair[0].getVertex(),pair[1].getVertex())
                     state = (pair[0].getState(),pair[1].getState())
-                    self.transactions[key]['edge'] = edge
+                    self.transactions[key]['pair'] = pair
                     self.transactions[key]['states'] = state
                     self.interactions[str(edge)]['count'] += 1
+                    #print(self.interactions[str(edge)])
                     
                     ### --- max counter
                     if self.count_max[-1] <= self.interactions[str(edge)]['count']:
@@ -64,6 +65,7 @@ class InteractionLog:
     
     
     def append(self, pair, null = False):
+        edge = (pair[0].getVertex(),pair[1].getVertex())
         if type(pair) == tuple:
             if type(pair[0]) == Agent and type(pair[1]) == Agent:
                 if null == False:
@@ -72,7 +74,7 @@ class InteractionLog:
                     edge = (pair[0].getVertex(),pair[1].getVertex())
                     self.pointer += 1
                     self.null_indexes.append(self.pointer)
-                    self.null_transactions[self.pointer] = edge
+                    self.null_transactions[self.pointer] = pair
                     self.interactions[str(edge)]['null_count'] += 1
                     
                     ### --- max counter
@@ -105,11 +107,11 @@ class InteractionLog:
             
             if key == None:
                 if len(self.partition_indexes) > 0:
-                    index = partition_indexes[0]
+                    index = self.partition_indexes[0]
                 else:
                     index = -1
                 if len(self.null_partition_indexes) > 0:
-                    null_index = null_partition_indexes[0]
+                    null_index = self.null_partition_indexes[0]
                 else:
                     null_index = -1
                 key = max(index,null_index)
@@ -129,16 +131,17 @@ class InteractionLog:
                     self.indexes.append(index)
                     #pop the transaction off the partition list
                     transaction = self.partition.pop()
-                    edge = transaction[0]
+                    pair = transaction[0]
+                    edge = (pair[0].getVertex(),pair[1].getVertex())
                     later_states = transaction[1]
-                    former_states = (edge[0].getState(),edge[1].getState())
+                    former_states = (pair[0].getState(),pair[1].getState())
                     #add the transaction back to the transaction dictionary
                     self.transactions[index] = dict()
-                    self.transactions[index]['edge'] = edge
+                    self.transactions[index]['pair'] = pair
                     self.transactions[index]['states'] = former_states
                     #revert the state of the agents
-                    edge[0].changeState(later_states[0])
-                    edge[1].changeState(later_states[1])
+                    pair[0].changeState(later_states[0])
+                    pair[1].changeState(later_states[1])
                     #re-increment the interactions count
                     self.interactions[str(edge)]['count'] += 1
                     
@@ -159,7 +162,9 @@ class InteractionLog:
                     #reappend index to indexes list
                     self.null_indexes.append(null_index)
                     #pop the transaction off the partition list
-                    transaction = self.null_partition.pop()
+                    pair = self.null_partition.pop()
+                    self.null_transactions.append(pair)
+                    edge = (pair[0].getVertex(),pair[1].getVertex())
                     #re-increment the interactions count
                     self.interactions[str(edge)]['null_count'] += 1
                     
@@ -188,7 +193,7 @@ class InteractionLog:
             self.restore(key)
 
         if (key in self.indexes) or (key in self.null_indexes):
-            
+            print(key)
             while self.pointer > key:
                 #Grab the most recent index off both index containers
                 if len(self.indexes) > 0:
@@ -205,15 +210,16 @@ class InteractionLog:
                     self.partition_indexes.append(index)
                     #pop the transaction at index out of the dictionary
                     transaction = self.transactions.pop(index)
-                    edge = transaction['edge']
-                    later_states = (edge[0].getState(),edge[1].getState())
+                    pair = transaction['pair']
+                    later_states = (pair[0].getState(),pair[1].getState())
                     former_states = transaction['states']
                     #change the state of the two involved agents
-                    edge[0].changeState(former_states[0])
-                    edge[1].changeState(former_states[1])
+                    pair[0].changeState(former_states[0])
+                    pair[1].changeState(former_states[1])
                     #place this entry into its respective partitions dictionary
-                    self.partition.append((edge,later_states))
+                    self.partition.append((pair,later_states))
                     #factor the interaction count
+                    edge = (pair[0].getVertex(),pair[1].getVertex())
                     
                     ### --- max counter
                     if self.count_max[-1] == self.interactions[str(edge)]['count']:
@@ -229,12 +235,13 @@ class InteractionLog:
                     self.pointer = index
                 elif null_index > index:
                     #Assign index to its respective partition container
-                    self.null_partition_indexes.append(index)
-                    edge = self.null_transactions.pop(index)
+                    self.null_partition_indexes.append(null_index)
+                    pair = self.null_transactions.pop(null_index)
                     #no need to change the state of the two involved agents..
                     #thus place this entry into it's respective partitions dictionary
-                    self.null_partition.append(edge)
+                    self.null_partition.append(pair)
                     #factor the interaction count
+                    edge = (pair[0].getVertex(),pair[1].getVertex())
                     
                     ### --- max counter
                     if self.null_count_max[-1] == self.interactions[str(edge)]['null_count']:
