@@ -150,9 +150,9 @@ class PopulationProtocol(object):
          
         penstep = 4/(maxi-mini)
         
-        redstep = math.floor(127/(maxi - mini))
-        greenstep = math.floor(64/(maxi - mini))
-        bluestep = math.floor(128/(maxi - mini))
+        redstep = math.floor(127/(maxi))
+        greenstep = math.floor(64/(maxi))
+        bluestep = math.floor(128/(maxi))
         
         for agent in self.agents:
             vertex = agent.getVertex()
