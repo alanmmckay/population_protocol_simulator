@@ -39,22 +39,37 @@ population = PopulationProtocol(graph_parsed,transition_parsed,init_parsed)
 convergence = input("Expected convergence for this protocol: ")
 userInput = input("Command: ")
 printcount = 0
+step = 0
+converged = False
 while userInput != 'q':
     if userInput == "interact":
         userInput = int(input("quantity: "))
         if userInput == 0:
             while population.checkConvergence(convergence) == False:
                 status = population.invokeInteraction()
+                
+                ### convergance check
+                step+=1
+                if population.checkConvergence(convergence) == True:
+                    if converged == False:
+                        converged = step
+                        
                 if status == "stateChanged":
                     break
-            if population.checkConvergence(convergence) == True:
-                print("Population has converged")
+                
         else:
             count = 0
             while count < userInput:
                 status = population.invokeInteraction()  
                 if status:
                     count += 1
+                
+                ### convergence check
+                step+=1
+                if population.checkConvergence(convergence) == True:
+                    if converged == False:
+                        converged = step
+                        
     if userInput == 'converge':
         userInput = int(input("Max interactions: "))
         count = 0
@@ -63,6 +78,13 @@ while userInput != 'q':
                 break
             population.invokeInteraction()
             count += 1
+            
+            ### convergence check
+            step+=1
+            if population.checkConvergence(convergence) == True:
+                if converged == False:
+                    converged = step
+                
     if userInput == 'converge and nullprint':
         userInput = int(input('max interactions: '))
         count = 0
@@ -79,6 +101,12 @@ while userInput != 'q':
                 check_call(['dot','-Tpng','output/graph'+str(printcount)+'.dot','-o','output/graph-'+str(printcount)+'.png'])
                 printcount += 1
             
+            ### convergence check
+            step+=1
+            if population.checkConvergence(convergence) == True:
+                if converged == False:
+                    converged = step
+                
     if userInput == 'nullprint':
         dot = population.renderConfiguration("null")
         graphfile = open('output/graph'+str(printcount)+'.dot','w')
@@ -93,6 +121,21 @@ while userInput != 'q':
         graphfile.close()
         check_call(['dot','-Tpng','output/graph'+str(printcount)+'.dot','-o','output/graph-'+str(printcount)+'.png'])
         printcount += 1
+    
+        
+    if userInput == "rollback":
+        print(population.log.null_indexes)
+        print(population.log.indexes)
+        userInput = input("step to rollback: ")
+        population.log.rollback(int(userInput))
+        
+    if userInput == "restore":
+        population.log.restore()
+    
+    
+    if converged != False and converged != -1:
+        print("Population has converged on step "+str(converged))
+        converged = -1
         
     userInput = input("Command: ")
 
