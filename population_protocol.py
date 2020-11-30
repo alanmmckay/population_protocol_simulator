@@ -1,4 +1,5 @@
 import random
+import math
 from agent import Agent
 from interaction_log import InteractionLog
 
@@ -47,7 +48,7 @@ class PopulationProtocol(object):
    
     def checkConvergence(self,value):
         for agent in self.agents:
-            if agent.getState() != value:
+            if str(agent.getState()) != str(value):
                 return False
         return True
    
@@ -106,4 +107,78 @@ class PopulationProtocol(object):
             return False
         #return((sender.getVertex(),receiver.getVertex()))
         
+    def renderConfiguration(self, interaction_type = None):
+        '''interaction_type represents which type of interaction to show on the graph.
+            the default will output two graphs, one where each edge measures regular
+            interactions and another where each edge measures null interactions.
+            
+            The string arguments of regular and null will only output a single graph
+            of the respective type and the string argument of merged will output a single
+            where each edge measures both null and regular interactions
+        '''
         
+        node_str = str()
+        edge_str = str()
+        max_weight = self.log.getCurrentMax('regular')
+        min_weight = self.log.getCurrentMin('regular')
+        max_null_weight = self.log.getCurrentMax('null')
+        min_null_weight = self.log.getCurrentMin('null')
+        
+        if interaction_type == 'regular':
+            maxi = max_weight
+            mini = min_weight
+            accessor = "count"
+        elif interaction_type == 'null':
+            maxi = max_null_weight
+            mini = min_null_weight 
+            accessor = "null_count"
+            
+        if mini == float('inf'):
+            mini = 0
+        
+        if maxi == -(float('inf')):
+            maxi = 1
+            mini = 0
+            
+        if mini == float('inf') and maxi == -(float('inf')):
+            maxi= 1
+            mini = 0
+            
+        if mini == maxi:
+            maxi = 1
+            mini = 0
+         
+        penstep = 4/(maxi-mini)
+        
+        redstep = math.floor(127/(maxi - mini))
+        greenstep = math.floor(64/(maxi - mini))
+        bluestep = math.floor(128/(maxi - mini))
+        
+        for agent in self.agents:
+            vertex = agent.getVertex()
+            label = agent.getState()
+            node_str += str(vertex)
+            node_str += ' [label ="'+str(label)+'",'
+            node_str += 'shape=circle,fixedsize=true,fontsize=24,width=0.5]\n'
+            
+            for neighbor in agent.getNeighbors():
+                edge = str((vertex,neighbor))
+                value = self.log.interactions[edge][accessor]
+                edge_str += vertex + ' -> ' + neighbor
+                
+                ### --- color logic for edges: grey->red
+                red = (128 + (value)*redstep)
+                green = (128 - (value)*greenstep)
+                blue = (128 - (value)*bluestep)
+                color = hex((256**2)*red + 256*green + blue)
+                color=color.split('x')
+                color=color[1]
+                ### ---
+                
+                edge_str += ' [color="#'+str(color)+'",penwidth='+str(1+penstep*value)+']\n'
+            
+        return "digraph D { \n " + node_str + "\n" + edge_str + "}"
+        
+        
+#rgb(255, 0, 0)
+#rgb(230, 230, 230) grey
