@@ -4,7 +4,7 @@ from agent import Agent
 from interaction_log import InteractionLog
 
 class PopulationProtocol(object):
-    def __init__(self,graph,transitions,init):
+    def __init__(self,graph,init,transitions):
         #graph: [[vertices],[edges]
         #edge: tuple: (from vertex, to vertex)
         #transitions {state(s): state(s)}
@@ -25,7 +25,6 @@ class PopulationProtocol(object):
         
         self.log = InteractionLog(self.edges)
         #edge_iterator = list(self.edges)
-        
         for vertex in self.vertices:
             new_agent = Agent(vertex, self.initial_values[vertex][0])
             for edge in self.edges:
@@ -93,6 +92,7 @@ class PopulationProtocol(object):
             raise ValueError("Duplicate arguments")
         
         current_state = (sender.getState(),receiver.getState())
+        #print((sender.getVertex(),receiver.getVertex()),((sender.getState(),receiver.getState())))
         if str(current_state) in self.transition_function:
             if str(self.transition_function[str(current_state)]) != str(current_state):
                 #log interaction
@@ -105,7 +105,7 @@ class PopulationProtocol(object):
                 return "null"
         else:
             self.log.append((sender,receiver),True)
-            return False
+            return "null"
         #return((sender.getVertex(),receiver.getVertex()))
         
     def renderConfiguration(self, interaction_type = None):
